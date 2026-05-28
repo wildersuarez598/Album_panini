@@ -218,64 +218,66 @@
     <button onclick="clearAlbum()">Limpiar</button>
     <button onclick="markAll()">Marcar todas</button>
     <button onclick="toggleDark()">Modo oscuro</button>
+    <button onclick="exportPDF()">Exportar PDF</button>
   </div>
 </div>
 
 <div class="album" id="album"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const sections = {
-  "FIFA WORLD CUP": createRange("FWC", 20),
-  "COCA COLA": createRange("CC", 14),
-
-  "MÉXICO 🇲🇽": createRange("MEX", 20),
-  "SUDÁFRICA 🇿🇦": createRange("RSA", 20),
-  "COREA 🇰🇷": createRange("KOR", 20),
-  "REPÚBLICA CHECA 🇨🇿": createRange("CZE", 20),
-  "CANADÁ 🇨🇦": createRange("CAN", 20),
-  "BOSNIA 🇧🇦": createRange("BIH", 20),
-  "QATAR 🇶🇦": createRange("QAT", 20),
-  "SUIZA 🇨🇭": createRange("SUI", 20),
-  "BRASIL 🇧🇷": createRange("BRA", 20),
-  "MARRUECOS 🇲🇦": createRange("MAR", 20),
-  "HAITÍ 🇭🇹": createRange("HAI", 20),
-  "ESCOCIA 🏴": createRange("SCO", 20),
-  "ESTADOS UNIDOS 🇺🇸": createRange("USA", 20),
-  "PARAGUAY 🇵🇾": createRange("PAR", 20),
-  "AUSTRALIA 🇦🇺": createRange("AUS", 20),
-  "TURQUÍA 🇹🇷": createRange("TUR", 20),
-  "ALEMANIA 🇩🇪": createRange("GER", 20),
-  "CURAZAO 🇨🇼": createRange("CUW", 20),
-  "COSTA DE MARFIL 🇨🇮": createRange("CIV", 20),
-  "ECUADOR 🇪🇨": createRange("ECU", 20),
-  "PAÍSES BAJOS 🇳🇱": createRange("NED", 20),
-  "JAPÓN 🇯🇵": createRange("JPN", 20),
-  "SUECIA 🇸🇪": createRange("SWE", 20),
-  "TÚNEZ 🇹🇳": createRange("TUN", 20),
-  "BÉLGICA 🇧🇪": createRange("BEL", 20),
-  "EGIPTO 🇪🇬": createRange("EGY", 20),
-  "IRÁN 🇮🇷": createRange("IRN", 20),
-  "NUEVA ZELANDA 🇳🇿": createRange("NZL", 20),
-  "ESPAÑA 🇪🇸": createRange("ESP", 20),
-  "CABO VERDE 🇨🇻": createRange("CPV", 20),
-  "ARABIA SAUDITA 🇸🇦": createRange("KSA", 20),
-  "URUGUAY 🇺🇾": createRange("URU", 20),
-  "FRANCIA 🇫🇷": createRange("FRA", 20),
-  "SENEGAL 🇸🇳": createRange("SEN", 20),
-  "IRAK 🇮🇶": createRange("IRQ", 20),
-  "NORUEGA 🇳🇴": createRange("NOR", 20),
-  "ARGENTINA 🇦🇷": createRange("ARG", 20),
-  "ARGELIA 🇩🇿": createRange("ALG", 20),
-  "AUSTRIA 🇦🇹": createRange("AUT", 20),
-  "JORDANIA 🇯🇴": createRange("JOR", 20),
-  "PORTUGAL 🇵🇹": createRange("POR", 20),
-  "CONGO 🇨🇩": createRange("COD", 20),
-  "UZBEKISTÁN 🇺🇿": createRange("UZB", 20),
-  "COLOMBIA 🇨🇴": createRange("COL", 20),
-  "INGLATERRA 🏴": createRange("ENG", 20),
-  "CROACIA 🇭🇷": createRange("CRO", 20),
-  "GHANA 🇬🇭": createRange("GHA", 20),
-  "PANAMÁ 🇵🇦": createRange("PAN", 20)
+  "FIFA WORLD CUP": createRange("FWC", 9),
+  "MÉXICO": createRange("MEX", 20),
+  "SUDÁFRICA": createRange("RSA", 20),
+  "COREA": createRange("KOR", 20),
+  "REPÚBLICA CHECA": createRange("CZE", 20),
+  "CANADÁ": createRange("CAN", 20),
+  "BOSNIA": createRange("BIH", 20),
+  "QATAR": createRange("QAT", 20),
+  "SUIZA": createRange("SUI", 20),
+  "BRASIL": createRange("BRA", 20),
+  "MARRUECOS": createRange("MAR", 20),
+  "HAITÍ": createRange("HAI", 20),
+  "ESCOCIA": createRange("SCO", 20),
+  "ESTADOS UNIDOS": createRange("USA", 20),
+  "PARAGUAY": createRange("PAR", 20),
+  "AUSTRALIA": createRange("AUS", 20),
+  "TURQUÍA": createRange("TUR", 20),
+  "ALEMANIA": createRange("GER", 20),
+  "CURAZAO": createRange("CUW", 20),
+  "COSTA DE MARFIL": createRange("CIV", 20),
+  "ECUADOR": createRange("ECU", 20),
+  "PAÍSES BAJOS": createRange("NED", 20),
+  "JAPÓN": createRange("JPN", 20),
+  "SUECIA": createRange("SWE", 20),
+  "TÚNEZ": createRange("TUN", 20),
+  "BÉLGICA": createRange("BEL", 20),
+  "EGIPTO": createRange("EGY", 20),
+  "IRÁN": createRange("IRN", 20),
+  "NUEVA ZELANDA": createRange("NZL", 20),
+  "ESPAÑA": createRange("ESP", 20),
+  "CABO VERDE": createRange("CPV", 20),
+  "ARABIA SAUDITA": createRange("KSA", 20),
+  "URUGUAY": createRange("URU", 20),
+  "FRANCIA": createRange("FRA", 20),
+  "SENEGAL": createRange("SEN", 20),
+  "IRAK": createRange("IRQ", 20),
+  "NORUEGA": createRange("NOR", 20),
+  "ARGENTINA": createRange("ARG", 20),
+  "ARGELIA": createRange("ALG", 20),
+  "AUSTRIA": createRange("AUT", 20),
+  "JORDANIA": createRange("JOR", 20),
+  "PORTUGAL": createRange("POR", 20),
+  "CONGO": createRange("COD", 20),
+  "UZBEKISTÁN": createRange("UZB", 20),
+  "COLOMBIA": createRange("COL", 20),
+  "INGLATERRA": createRange("ENG", 20),
+  "CROACIA": createRange("CRO", 20),
+  "GHANA": createRange("GHA", 20),
+  "PANAMÁ": createRange("PAN", 20),
+  "FIFA WORLD CUP": createRange("FWC", 11),
+  "COCA COLA": createRange("CC", 14)
 };
 
 function createRange(prefix, total) {
@@ -376,6 +378,70 @@ function showRepeated() {
       el.style.display = 'block';
     }
   });
+}
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const all = Object.values(sections).flat();
+
+  let y = 20;
+
+  doc.setFontSize(18);
+  doc.text('Álbum Mundial 2026 - Progreso', 20, y);
+
+  y += 15;
+
+  const have = [];
+  const repeated = [];
+  const missing = [];
+
+  all.forEach(id => {
+    const state = storage[id] || 0;
+
+    if (state === 1) have.push(id);
+    else if (state === 2) repeated.push(id);
+    else missing.push(id);
+  });
+
+  doc.setFontSize(12);
+
+  doc.text(`Tengo: ${have.length}`, 20, y);
+  y += 8;
+
+  doc.text(`Repetidas: ${repeated.length}`, 20, y);
+  y += 8;
+
+  doc.text(`Faltantes: ${missing.length}`, 20, y);
+  y += 15;
+
+  function addSection(title, items) {
+    doc.setFontSize(14);
+    doc.text(title, 20, y);
+    y += 8;
+
+    doc.setFontSize(10);
+
+    const text = items.length ? items.join(', ') : 'Ninguna';
+
+    const lines = doc.splitTextToSize(text, 170);
+
+    doc.text(lines, 20, y);
+
+    y += lines.length * 6 + 10;
+
+    if (y > 260) {
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  addSection('Fichas obtenidas', have);
+  addSection('Fichas repetidas', repeated);
+  addSection('Fichas faltantes', missing);
+
+  doc.save('album-panini-progreso.pdf');
 }
 
 function toggleDark() {
