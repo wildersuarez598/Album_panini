@@ -227,7 +227,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const sections = {
- "FIFA WORLD CUP": createRange("FWC", 9),
+"FIFA WORLD CUP": createRange("FWC", 9),
   "MÉXICO": createRange("MEX", 20),
   "SUDÁFRICA": createRange("RSA", 20),
   "COREA": createRange("KOR", 20),
@@ -392,10 +392,78 @@ async function exportPDF() {
   let x = 15;
   let y = 20;
 
+  const all = Object.values(sections).flat();
+
+  let have = [];
+  let repeated = [];
+  let missing = [];
+
+  all.forEach(id => {
+    const state = storage[id] || 0;
+
+    if(state === 1) have.push(id);
+    else if(state === 2) repeated.push(id);
+    else missing.push(id);
+  });
+
   doc.setFontSize(18);
   doc.text('PLANILLA DE CONTROL - MUNDIAL 2026', 15, y);
 
-  y += 10;
+  y += 15;
+
+  doc.setFontSize(12);
+
+  doc.text(`Tengo: ${have.length}`, 15, y);
+  y += 8;
+
+  doc.text(`Repetidas: ${repeated.length}`, 15, y);
+  y += 8;
+
+  doc.text(`Faltantes: ${missing.length}`, 15, y);
+
+  y += 12;
+
+  doc.setFontSize(13);
+  doc.text('Fichas repetidas:', 15, y);
+
+  y += 7;
+
+  doc.setFontSize(10);
+
+  const repeatedLines = doc.splitTextToSize(
+    repeated.length ? repeated.join(', ') : 'Ninguna',
+    180
+  );
+
+  doc.text(repeatedLines, 15, y);
+
+  y += repeatedLines.length * 5 + 10;
+
+  doc.setFontSize(13);
+  doc.text('Fichas faltantes:', 15, y);
+
+  y += 7;
+
+  doc.setFontSize(10);
+
+  const missingLines = doc.splitTextToSize(
+    missing.length ? missing.join(', ') : 'Ninguna',
+    180
+  );
+
+  doc.text(missingLines, 15, y);
+
+  y += missingLines.length * 5 + 15;
+
+  if(y > 240) {
+    doc.addPage();
+    y = 20;
+  }
+
+  doc.setFontSize(15);
+  doc.text('CONTROL VISUAL DEL ÁLBUM', 15, y);
+
+  y += 12;
 
   Object.entries(sections).forEach(([title, stickers]) => {
 
