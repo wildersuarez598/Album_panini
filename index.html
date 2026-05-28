@@ -404,8 +404,13 @@ async function exportPDF() {
   all.forEach(id => {
     const state = storage[id] || 0;
 
-    if(state === 1) have.push(id);
-    else if(state === 2) repeated.push(id);
+    if(state === 1) {
+      have.push(id);
+    }
+    else if(state === 2) {
+      repeated.push(id);
+      have.push(id);
+    }
     else missing.push(id);
   });
 
