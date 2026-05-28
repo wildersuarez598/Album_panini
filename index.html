@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Álbum Mundial 2026</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+      color: #222;
+      padding-bottom: 80px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: white;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      background: #f0f2f5;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 12px;
+      background: #ddd;
+      border-radius: 50px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      transition: 0.3s;
+    }
+
+    .controls {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, select {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    .album {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .stickers {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+      gap: 10px;
+    }
+
+    .sticker {
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 14px;
+      padding: 14px 5px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      user-select: none;
+    }
+
+    .sticker.have {
+      background: #22c55e;
+      color: white;
+      border-color: #16a34a;
+    }
+
+    .sticker.repeat {
+      background: #facc15;
+      color: #222;
+      border-color: #eab308;
+    }
+
+    .dark {
+      background: #111827;
+      color: white;
+    }
+
+    .dark header,
+    .dark .section {
+      background: #1f2937;
+      color: white;
+    }
+
+    .dark .stat {
+      background: #374151;
+    }
+
+    .dark .sticker {
+      background: #374151;
+      border-color: #4b5563;
+      color: white;
+    }
+
+    .dark input,
+    .dark select {
+      background: #374151;
+      color: white;
+      border: 1px solid #4b5563;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚽ Álbum Mundial 2026</h1>
+
+  <div class="stats">
+    <div class="stat">
+      <div id="owned">0</div>
+      <small>Tengo</small>
+    </div>
+
+    <div class="stat">
+      <div id="repeated">0</div>
+      <small>Repetidas</small>
+    </div>
+
+    <div class="stat">
+      <div id="missing">0</div>
+      <small>Faltan</small>
+    </div>
+
+    <div class="stat">
+      <div id="percent">0%</div>
+      <small>Avance</small>
+    </div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Buscar ficha...">
+
+  <div class="buttons">
+    <button onclick="showRepeated()">Repetidas</button>
+    <button onclick="clearAlbum()">Limpiar</button>
+    <button onclick="markAll()">Marcar todas</button>
+    <button onclick="toggleDark()">Modo oscuro</button>
+  </div>
+</div>
+
+<div class="album" id="album"></div>
+
+<script>
+const sections = {
+  "FIFA WORLD CUP": createRange("FWC", 20),
+  "COCA COLA": createRange("CC", 14),
+  "COLOMBIA 🇨🇴": createRange("COL", 20),
+  "ARGENTINA 🇦🇷": createRange("ARG", 20),
+  "BRASIL 🇧🇷": createRange("BRA", 20),
+  "FRANCIA 🇫🇷": createRange("FRA", 20),
+  "ALEMANIA 🇩🇪": createRange("GER", 20),
+  "ESPAÑA 🇪🇸": createRange("ESP", 20),
+  "INGLATERRA 🏴": createRange("ENG", 20),
+  "PORTUGAL 🇵🇹": createRange("POR", 20),
+  "URUGUAY 🇺🇾": createRange("URU", 20),
+  "MÉXICO 🇲🇽": createRange("MEX", 20)
+};
+
+function createRange(prefix, total) {
+  return Array.from({ length: total }, (_, i) => `${prefix}${i + 1}`);
+}
+
+const album = document.getElementById("album");
+const storage = JSON.parse(localStorage.getItem("albumData") || "{}");
+
+function renderAlbum(filter = "") {
+  album.innerHTML = "";
+
+  Object.entries(sections).forEach(([title, stickers]) => {
+    const filtered = stickers.filter(s =>
+      s.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    if (!filtered.length) return;
+
+    const section = document.createElement("div");
+    section.className = "section";
+
+    section.innerHTML = `
+      <h2>${title}</h2>
+      <div class="stickers">
+        ${filtered.map(sticker => {
+          const state = storage[sticker] || 0;
+
+          let cls = "";
+          if (state === 1) cls = "have";
+          if (state === 2) cls = "repeat";
+
+          return `
+            <div class="sticker ${cls}" onclick="toggleSticker('${sticker}')">
+              ${sticker}
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+
+    album.appendChild(section);
+  });
+
+  updateStats();
+}
+
+function toggleSticker(id) {
+  storage[id] = ((storage[id] || 0) + 1) % 3;
+
+  localStorage.setItem("albumData", JSON.stringify(storage));
+  renderAlbum(document.getElementById("search").value);
+}
+
+function updateStats() {
+  const all = Object.values(sections).flat();
+
+  let have = 0;
+  let repeated = 0;
+
+  all.forEach(id => {
+    if (storage[id] === 1) have++;
+    if (storage[id] === 2) repeated++;
+  });
+
+  const missing = all.length - have - repeated;
+  const percent = ((have + repeated) / all.length * 100).toFixed(1);
+
+  document.getElementById("owned").innerText = have;
+  document.getElementById("repeated").innerText = repeated;
+  document.getElementById("missing").innerText = missing;
+  document.getElementById("percent").innerText = percent + "%";
+
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function clearAlbum() {
+  if(confirm("¿Limpiar todo el álbum?")) {
+    localStorage.removeItem("albumData");
+    location.reload();
+  }
+}
+
+function markAll() {
+  Object.values(sections).flat().forEach(id => {
+    storage[id] = 1;
+  });
+
+  localStorage.setItem("albumData", JSON.stringify(storage));
+  renderAlbum();
+}
+
+function showRepeated() {
+  document.querySelectorAll('.sticker').forEach(el => {
+    if (!el.classList.contains('repeat')) {
+      el.style.display = 'none';
+    } else {
+      el.style.display = 'block';
+    }
+  });
+}
+
+function toggleDark() {
+  document.body.classList.toggle("dark");
+}
+
+search.addEventListener("input", (e) => {
+  renderAlbum(e.target.value);
+});
+
+renderAlbum();
+</script>
+
+</body>
+</html>
