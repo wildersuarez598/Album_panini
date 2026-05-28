@@ -419,6 +419,9 @@ async function exportPDF() {
   doc.text(`Tengo: ${have.length}`, 15, y);
   y += 8;
 
+  doc.text(`Repetidas: ${repeated.length}`, 15, y);
+  y += 8;
+
   doc.text(`Faltantes: ${missing.length}`, 15, y);
 
   y += 12;
@@ -429,15 +432,9 @@ async function exportPDF() {
   y += 7;
 
   doc.setFontSize(10);
+  doc.text(`Total repetidas: ${repeated.length}`, 15, y);
 
-  const repeatedLines = doc.splitTextToSize(
-    repeated.length ? repeated.join(', ') : 'Ninguna',
-    180
-  );
-
-  doc.text(repeatedLines, 15, y);
-
-  y += repeatedLines.length * 5 + 10;
+  y += 15;
 
   doc.setFontSize(13);
   doc.text('Fichas faltantes:', 15, y);
