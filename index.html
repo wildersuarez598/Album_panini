@@ -388,6 +388,12 @@ async function exportPDF() {
 
   const doc = new jsPDF("landscape", "mm", "a4");
 
+  let y = 15;
+
+  const totalCols = 15;
+  const cellW = 11;
+  const cellH = 5;
+
   const all = Object.values(sections).flat();
 
   let have = 0;
@@ -408,61 +414,87 @@ async function exportPDF() {
 
   const missing = all.length - have;
 
+  // RESUMEN
+
   doc.setFontSize(18);
-  doc.text("ALBUM MUNDIAL 2026", 10, 15);
+  doc.text("ALBUM MUNDIAL 2026", 10, y);
+
+  y += 10;
 
   doc.setFontSize(11);
 
-  doc.text(`Tengo: ${have}`,10,25);
-  doc.text(`Repetidas: ${repeated}`,60,25);
-  doc.text(`Faltantes: ${missing}`,120,25);
+  doc.text(`Tengo: ${have}`,10,y);
+  doc.text(`Repetidas: ${repeated}`,70,y);
+  doc.text(`Faltantes: ${missing}`,140,y);
 
-  doc.text("🟩 Tengo",10,35);
-  doc.text("🟨 Repetida",60,35);
-  doc.text("⬜ Faltante",120,35);
+  y += 8;
 
-  let x = 10;
-  let y = 45;
+  doc.text("VERDE = Tengo",10,y);
+  doc.text("AMARILLO = Repetida",70,y);
+  doc.text("BLANCO = Faltante",150,y);
 
-  const cols = 18;
-  const cellW = 14;
-  const cellH = 6;
+  y += 10;
 
-  all.forEach((sticker,index)=>{
+  // SECCIONES
 
-    const state = storage[sticker] || 0;
+  Object.entries(sections).forEach(([title, stickers]) => {
 
-    if(state === 1){
-      doc.setFillColor(34,197,94);
-    }
-    else if(state === 2){
-      doc.setFillColor(250,204,21);
-    }
-    else{
-      doc.setFillColor(255,255,255);
-    }
-
-    doc.rect(x,y,cellW,cellH,"F");
-    doc.rect(x,y,cellW,cellH);
-
-    doc.setFontSize(5);
-    doc.text(sticker,x+1,y+4);
-
-    x += cellW;
-
-    if((index+1)%cols===0){
-      x=10;
-      y+=cellH;
-    }
-
-    if(y>185){
-
+    // Salto de página si no cabe la sección
+    if(y > 175){
       doc.addPage();
-
-      x=10;
-      y=15;
-
+      y = 15;
     }
+
+    // Encabezado de selección
+
+    doc.setFillColor(30,41,59);
+    doc.rect(10,y-4,270,6,"F");
+
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(9);
+    doc.text(title,12,y);
+
+    doc.setTextColor(0,0,0);
+
+    y += 6;
+
+    let x = 10;
+
+    stickers.forEach((sticker,index)=>{
+
+      const state = storage[sticker] || 0;
+
+      if(state === 1){
+        doc.setFillColor(34,197,94);
+      }
+      else if(state === 2){
+        doc.setFillColor(250,204,21);
+      }
+      else{
+        doc.setFillColor(255,255,255);
+      }
+
+      doc.rect(x,y,cellW,cellH,"F");
+      doc.rect(x,y,cellW,cellH);
+
+      doc.setFontSize(5);
+      doc.text(sticker,x+1,y+3);
+
+      x += cellW + 1;
+
+      if((index + 1) % totalCols === 0){
+        x = 10;
+        y += cellH + 1;
+      }
+
+    });
+
+    // Si la fila quedó incompleta
+    if(stickers.length % totalCols !== 0){
+      y += cellH + 1;
+    }
+
+    y += 6;
 
   });
 
