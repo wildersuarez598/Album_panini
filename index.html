@@ -383,15 +383,10 @@ function showRepeated() {
 }
 
 async function exportPDF() {
+
   const { jsPDF } = window.jspdf;
 
   const doc = new jsPDF("landscape", "mm", "a4");
-
-  let y = 15;
-
-  const totalCols = 15;
-  const cellW = 11;
-  const cellH = 5;
 
   const all = Object.values(sections).flat();
 
@@ -399,82 +394,80 @@ async function exportPDF() {
   let repeated = 0;
 
   all.forEach(id => {
-    if (storage[id] === 1) have++;
 
-    if (storage[id] === 2) {
+    if(storage[id] === 1){
+      have++;
+    }
+
+    if(storage[id] === 2){
       repeated++;
       have++;
     }
+
   });
 
   const missing = all.length - have;
 
   doc.setFontSize(18);
-  doc.text("PLANILLA DE CONTROL - MUNDIAL 2026", 10, y);
-
-  y += 10;
+  doc.text("ALBUM MUNDIAL 2026", 10, 15);
 
   doc.setFontSize(11);
-  doc.text(`Tengo: ${have}`, 10, y);
-  doc.text(`Repetidas: ${repeated}`, 70, y);
-  doc.text(`Faltantes: ${missing}`, 140, y);
 
-  y += 8;
+  doc.text(`Tengo: ${have}`,10,25);
+  doc.text(`Repetidas: ${repeated}`,60,25);
+  doc.text(`Faltantes: ${missing}`,120,25);
 
-  doc.text("Verde = Tengo | Amarillo = Repetida | Blanco = Faltante", 10, y);
+  doc.text("🟩 Tengo",10,35);
+  doc.text("🟨 Repetida",60,35);
+  doc.text("⬜ Faltante",120,35);
 
-  y += 10;
+  let x = 10;
+  let y = 45;
 
-  Object.entries(sections).forEach(([title, stickers]) => {
+  const cols = 18;
+  const cellW = 14;
+  const cellH = 6;
 
-    if (y > 180) {
-      doc.addPage();
-      y = 15;
+  all.forEach((sticker,index)=>{
+
+    const state = storage[sticker] || 0;
+
+    if(state === 1){
+      doc.setFillColor(34,197,94);
+    }
+    else if(state === 2){
+      doc.setFillColor(250,204,21);
+    }
+    else{
+      doc.setFillColor(255,255,255);
     }
 
-    doc.setFillColor(30, 41, 59);
-    doc.rect(10, y - 4, 270, 6, "F");
+    doc.rect(x,y,cellW,cellH,"F");
+    doc.rect(x,y,cellW,cellH);
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.text(title, 12, y);
+    doc.setFontSize(5);
+    doc.text(sticker,x+1,y+4);
 
-    doc.setTextColor(0, 0, 0);
+    x += cellW;
 
-    y += 5;
+    if((index+1)%cols===0){
+      x=10;
+      y+=cellH;
+    }
 
-    let x = 10;
+    if(y>185){
 
-    stickers.forEach((sticker, index) => {
+      doc.addPage();
 
-      const state = storage[sticker] || 0;
+      x=10;
+      y=15;
 
-      if (state === 1) {
-        doc.setFillColor(34, 197, 94);
-      } else if (state === 2) {
-        doc.setFillColor(250, 204, 21);
-      } else {
-        doc.setFillColor(255, 255, 255);
-      }
+    }
 
-      doc.rect(x, y, cellW, cellH, "F");
-      doc.rect(x, y, cellW, cellH);
-
-      doc.setFontSize(5);
-      doc.text(sticker, x + 1, y + 3);
-
-      x += cellW + 1;
-
-      if ((index + 1) % totalCols === 0) {
-        x = 10;
-        y += cellH + 1;
-      }
-    });
-
-    y += 10;
   });
 
-  doc.save("album-panini.pdf");
+  doc.save("album-mundial-2026.pdf");
+
 }
 function toggleDark() {
   document.body.classList.toggle("dark");
